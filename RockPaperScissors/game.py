@@ -2,13 +2,6 @@
 import random
 import os
 
-# 0 = Rock, 1 = Paper, 2 = Scissors
-__results = {(0, 0): 'Draw', (0, 1): 'Computer Wins (Paper covers rock)',
-(0, 2): 'You Win! (Rock smashes Scissors)', (1, 0): 'You Win! (Paper covers rock)',
-(1, 1): 'Draw', (1, 2): 'Computer Wins (Scissors cut paper)',
-(2, 0): 'Computer Wins (Rock smashes Scissors)',
-(2, 1): 'You win! (Scissors cut paper)', (2, 2): 'Draw'}
-
 def clearScreen():
     unused_var = os.system('cls')   # Windows
 
@@ -16,11 +9,11 @@ def clearScreen():
 
 #The valid response lists should be private
 __main_reponses = ['Start', 'Help', 'Quit', 's', 'S', 'start', 'START', 'h', 'H',
-'help', 'HELP', 'q', 'Q', 'quit', 'QUIT']
+    'help', 'HELP', 'q', 'Q', 'quit', 'QUIT']
 
 __game_responses = ['Rock', 'Paper', 'Scissors', 'r', 'R', 'p', 'P', 's', 'S',
-'rock', 'ROCK', 'paper', 'PAPER', 'scissors', 'scissor', 'Scissor', 'SCISSOR',
-'SCISSORS', 'q', 'Q', 'quit', 'Quit', 'QUIT']
+    'rock', 'ROCK', 'paper', 'PAPER', 'scissors', 'scissor', 'Scissor', 'SCISSOR',
+    'SCISSORS', 'q', 'Q', 'quit', 'Quit', 'QUIT']
 
 def CheckMainReponse(string):
     """Check if the parameter string is a valid response in the main menu"""
@@ -59,7 +52,9 @@ human = Data()
 computer = Data()
 
 def updateStats(game_result):
-    """Updates the statistics about the human and computer, and returns a string response about the winnner"""
+    """Updates the statistics about the human and computer.
+    Returns a string response about the winnner
+    """
     human_choice, computer_choice = game_result # Get the results
 
     # Update the choice counts
@@ -98,13 +93,20 @@ def viewStats():
 
 
 # The Rock, Paper, Scissors Game ==============================================
+# 0 = Rock, 1 = Paper, 2 = Scissors
+__results = {(0, 0): 'Draw', (0, 1): 'Computer Wins (Paper covers rock)',
+    (0, 2): 'You Win! (Rock smashes Scissors)', (1, 0): 'You Win! (Paper covers rock)',
+    (1, 1): 'Draw', (1, 2): 'Computer Wins (Scissors cut paper)',
+    (2, 0): 'Computer Wins (Rock smashes Scissors)',
+    (2, 1): 'You win! (Scissors cut paper)', (2, 2): 'Draw'}
 
 def Run():
     """The main method that runs the game"""
     while True:
         computer_index = random.randint(0, 2)
 
-        human_index = CheckGameResponse(input('Type your choice: Rock, Paper, or Scissors -->  '))
+        human_index = CheckGameResponse(input(
+            'Type your choice: Rock, Paper, or Scissors -->  '))
         if human_index > 2:
             print('Not a valid choice. Try again ...')
             continue
@@ -112,7 +114,8 @@ def Run():
             break;
 
         tup = human_index, computer_index
-        print("\t{0:8} vs. {1:8}\n".format(__game_responses[human_index].rjust(8), __game_responses[computer_index]))
+        print("\t{0:8} vs. {1:8}\n".format(__game_responses[human_index].rjust(8),
+            __game_responses[computer_index]))
 
         print(updateStats(tup))
         print('\n\n')
