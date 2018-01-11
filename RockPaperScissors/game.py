@@ -8,12 +8,12 @@ def clearScreen():
 # Response Variables and Functions =============================================
 
 #The valid response lists should be private
-__main_reponses = ['Start', 'Help', 'Quit', 's', 'S', 'start', 'START', 'h', 'H',
-    'help', 'HELP', 'q', 'Q', 'quit', 'QUIT']
+__main_reponses = ['Start', 'View', 'Quit', 's', 'S', 'start', 'START', 'v', 'V',
+    'view', 'VIEW', 'q', 'Q', 'quit', 'QUIT']
 
 __game_responses = ['Rock', 'Paper', 'Scissors', 'r', 'R', 'p', 'P', 's', 'S',
     'rock', 'ROCK', 'paper', 'PAPER', 'scissors', 'scissor', 'Scissor', 'SCISSOR',
-    'SCISSORS', 'q', 'Q', 'quit', 'Quit', 'QUIT']
+    'SCISSORS', 'q', 'Q', 'quit', 'Quit', 'QUIT', 'v', 'V', 'view', 'View', 'VIEW']
 
 def CheckMainReponse(string):
     """Check if the parameter string is a valid response in the main menu"""
@@ -21,7 +21,7 @@ def CheckMainReponse(string):
         if response == string:
             if response[0] == 's' or response[0] == 'S':
                 return 0
-            elif response[0] == 'h' or response[0] == 'H':
+            elif response[0] == 'v' or response[0] == 'V':
                 return 1
             else: return -1
     return 2
@@ -36,18 +36,40 @@ def CheckGameResponse(string):
                 return 1
             elif response[0] == 's' or response[0] == 'S':
                 return 2
+            elif response[0] == 'v' or response[0] == 'V':
+                return 3
             else: return -1
-    return 3
+    return 4
 
 # Game Stat Variables and  Functions ==========================================
 class Data:
     def __init__(self):
         self.r_count, self.p_count, self.s_count = 0, 0, 0
         self.w_count, self.d_count, self.l_count = 0, 0, 0
-    def getChoicePercentages():
-        pass
-    def getWDLPercentages():
-        pass
+
+    def isReadyForStatAnalysis(self):
+        """Checks for the total game counts to see if there are enough played games"""
+        if self.r_count + self.p_count + self.s_count >= 3:
+            return True
+        return False
+
+    def getChoicePercentages(self, element):
+        if element == 0:
+            return 100 * (self.r_count / (self.r_count + self.p_count + self.s_count))
+        if element == 1:
+            return 100 * (self.p_count / (self.r_count + self.p_count + self.s_count))
+        if element == 2:
+            return 100 * (self.s_count / (self.r_count + self.p_count + self.s_count))
+        else: return 0
+
+    def getWDLPercentages(self, element):
+        if element == 0:
+            return 100 * (self.w_count / (self.w_count + self.d_count + self.l_count))
+        if element == 1:
+            return 100 * (self.d_count / (self.w_count + self.d_count + self.l_count))
+        if element == 2:
+            return 100 * (self.l_count / (self.w_count + self.d_count + self.l_count))
+        else: return 0
 human = Data()
 computer = Data()
 
@@ -85,12 +107,33 @@ def updateStats(game_result):
 
     return winner # Return the string for the win response
 
-
 def viewStats():
     """Shows statistics about the session"""
-    #Choice Counts, Choices Means, Win/Draw/Loss Counts, Win/Draw/Loss Percentages
-    pass
+    clearScreen()
 
+    if not human.isReadyForStatAnalysis():
+        print('\n\tNot enough games have been played this session in order to platform statistics\n')
+        unused_var = input("\tPress 'Enter' to return ...")
+        return
+    print('\nYour Choices:')
+    print('\tRock: \t  ' + str(human.r_count) + ',\t%5.2f %%' % human.getChoicePercentages(0))
+    print('\tPaper: \t  ' + str(human.p_count) + ',\t%5.2f %%' % human.getChoicePercentages(1))
+    print('\tScissors: ' + str(human.s_count) + ',\t%5.2f %%' % human.getChoicePercentages(2))
+    print('\nComptuer Choices:')
+    print('\tRock: \t  ' + str(computer.r_count) + ',\t%5.2f %%' % computer.getChoicePercentages(0))
+    print('\tPaper: \t  ' + str(computer.p_count) + ',\t%5.2f %%' % computer.getChoicePercentages(1))
+    print('\tScissors: ' + str(computer.s_count) + ',\t%5.2f %%' % computer.getChoicePercentages(2))
+
+    print('\nYour Wins, Draws, and Losses:')
+    print('\tWins: \t  ' + str(human.w_count) + ',\t%5.2f %%' % human.getWDLPercentages(0))
+    print('\tDraws: \t  ' + str(human.d_count) + ',\t%5.2f %%' % human.getWDLPercentages(1))
+    print('\tLosses:   ' + str(human.l_count) + ',\t%5.2f %%' % human.getWDLPercentages(2))
+    print('\nComptuer\'s Wins, Draws, and Losses:')
+    print('\tWins: \t  ' + str(computer.w_count) + ',\t%5.2f %%' % computer.getWDLPercentages(0))
+    print('\tDraws: \t  ' + str(computer.d_count) + ',\t%5.2f %%' % computer.getWDLPercentages(1))
+    print('\tLosses:   ' + str(computer.l_count) + ',\t%5.2f %%' % computer.getWDLPercentages(2))
+
+    unused_var = input("\nPress 'Enter' to return ...")
 
 # The Rock, Paper, Scissors Game ==============================================
 # 0 = Rock, 1 = Paper, 2 = Scissors
@@ -107,8 +150,11 @@ def Run():
 
         human_index = CheckGameResponse(input(
             'Type your choice: Rock, Paper, or Scissors -->  '))
-        if human_index > 2:
+        if human_index > 3:
             print('Not a valid choice. Try again ...')
+            continue
+        elif human_index == 3:
+            viewStats()
             continue
         elif human_index < 0:
             break;
@@ -127,7 +173,7 @@ def printMainMenu():
     print('\n       Welcome to the Rock, Paper, Scissors game!')
     print('    You will be challenging the computer for this game\n')
     print('\tType "Start" or "s" to start a new game')
-    print(' Type "help" or "h" to see all the options and settings')
+    print('\tType "view" or "v" to see all the stats')
     print('     Type "quit" or "q" at anytime to exit the game\n\n')
 
 if __name__ == '__main__':
@@ -139,13 +185,13 @@ if __name__ == '__main__':
 
         if choice < 0: #Quit
             continue
-        elif choice > 1:
+        elif choice > 2:
             print('Invalid option. Try again ...')
         elif choice == 0:
             Run()
             printMainMenu()
         elif choice == 1:
-            # Help Stuff
-            pass
+            viewStats()
+            printMainMenu()
 
     print('Exiting the game')
